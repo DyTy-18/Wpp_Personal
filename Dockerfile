@@ -21,12 +21,14 @@ RUN mkdir -p public && npx prisma generate && npx next build
 RUN npm prune --omit=dev
 
 FROM base AS runner
+# socket_timeout: segundos que Prisma espera si SQLite está ocupado (por defecto 5)
+# connection_limit=1: cada proceso escribe por una sola conexión, sin pelearse consigo mismo
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     PORT=3000 \
     HOSTNAME=0.0.0.0 \
     DATA_DIR=/app/data \
-    DATABASE_URL=file:/app/data/app.db
+    DATABASE_URL="file:/app/data/app.db?socket_timeout=60&connection_limit=1"
 
 COPY --from=build /app/package.json /app/package-lock.json ./
 COPY --from=build /app/node_modules ./node_modules

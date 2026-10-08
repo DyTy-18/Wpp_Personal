@@ -270,6 +270,8 @@ process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
 
 log("Worker iniciado");
+// WAL: el panel puede leer mientras el worker escribe (se guarda en el archivo de la base)
+await db.$queryRawUnsafe("PRAGMA journal_mode=WAL;");
 await writeFile(LOCK_FILE, INSTANCE_ID);
 await connect();
 setInterval(tick, TICK_MS);

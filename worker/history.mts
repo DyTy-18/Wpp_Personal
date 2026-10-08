@@ -19,7 +19,8 @@ import {
 // Guarda en la base de datos los chats, contactos y mensajes que manda WhatsApp,
 // tanto el historial inicial (al vincular) como lo que llega después.
 
-const CHUNK = 400;
+// Transacciones cortas: SQLite permite un solo escritor y el panel también escribe
+const CHUNK = 150;
 
 type Op = Prisma.PrismaPromise<unknown>;
 
@@ -216,28 +217,31 @@ export function createHistoryStore(db: PrismaClient, log: (...a: unknown[]) => v
     return rows.length;
   }
 
+  // WhatsApp manda el historial en muchos bloques casi a la vez. Si se guardan en paralelo,
+  // SQLite se queda bloqueado (P1008 "Socket timeout"). Todo pasa por esta fila, de a uno.
+  let queue: Promise<unknown> = Promise.resolve();
+  function enqueue(label: string, task: () => Promise<unknown>) {
+    queue = queue.then(task).catch((e) => log(`Error guardando ${label}:`, e instanceof Error ? e.message : e));
+  }
+
   function attach(sock: WASocket, onProgress: (p: number | null) => Promise<void>) {
-    sock.ev.on("messaging-history.set", async ({ chats, contacts, messages, lidPnMappings, progress, isLatest }) => {
-      try {
+    sock.ev.on("messaging-history.set", ({ chats, contacts, messages, lidPnMappings, progress, isLatest }) =>
+      enqueue("historial", async () => {
         await saveContacts(contacts);
         if (lidPnMappings?.length) await saveLidMappings(lidPnMappings);
         await saveChats(chats);
         const n = await saveMessages(messages, true);
         log(`Historial: ${chats.length} chats, ${contacts.length} contactos, ${n} mensajes (${progress ?? "?"}%)`);
         await onProgress(isLatest || progress === 100 ? null : progress ?? null);
-      } catch (e) {
-        log("Error guardando historial:", e);
-      }
-    });
-
-    sock.ev.on("chats.upsert", (chats) => saveChats(chats).catch((e) => log("chats.upsert:", e.message)));
-    sock.ev.on("chats.update", (chats) => saveChats(chats).catch((e) => log("chats.update:", e.message)));
-    sock.ev.on("contacts.upsert", (c) => saveContacts(c).catch((e) => log("contacts.upsert:", e.message)));
-    sock.ev.on("contacts.update", (c) => saveContacts(c).catch((e) => log("contacts.update:", e.message)));
-    sock.ev.on("lid-mapping.update", (m) => saveLidMappings([m]).catch(() => {}));
-    sock.ev.on("messages.upsert", ({ messages }) =>
-      saveMessages(messages, true).catch((e) => log("messages.upsert:", e.message)),
+      }),
     );
+
+    sock.ev.on("chats.upsert", (chats) => enqueue("chats", () => saveChats(chats)));
+    sock.ev.on("chats.update", (chats) => enqueue("chats", () => saveChats(chats)));
+    sock.ev.on("contacts.upsert", (c) => enqueue("contactos", () => saveContacts(c)));
+    sock.ev.on("contacts.update", (c) => enqueue("contactos", () => saveContacts(c)));
+    sock.ev.on("lid-mapping.update", (m) => enqueue("lid", () => saveLidMappings([m])));
+    sock.ev.on("messages.upsert", ({ messages }) => enqueue("mensajes", () => saveMessages(messages, true)));
   }
 
   return { attach };

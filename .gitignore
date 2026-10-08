@@ -46,3 +46,5 @@ next-env.d.ts
 /prisma/*.db-journal
 !.env.example
 /wa-auth.lock
+/prisma/*.db-wal
+/prisma/*.db-shm
