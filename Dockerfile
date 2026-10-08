@@ -15,7 +15,8 @@ RUN npm ci
 FROM deps AS build
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npx prisma generate && npx next build
+# mkdir public: git no guarda carpetas vacías y el COPY de abajo la necesita
+RUN mkdir -p public && npx prisma generate && npx next build
 # Quitar dependencias de desarrollo (eslint, tipos...) para la imagen final
 RUN npm prune --omit=dev
 

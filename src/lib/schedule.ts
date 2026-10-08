@@ -2,7 +2,7 @@ import { Cron } from "croner";
 
 // Compartido entre el panel (Next) y el worker: no importar nada de Next aquí.
 
-export const TIMEZONE = process.env.APP_TIMEZONE || "America/Mexico_City";
+export const TIMEZONE = process.env.APP_TIMEZONE || "America/La_Paz";
 
 export type ScheduleInput = {
   type: string;

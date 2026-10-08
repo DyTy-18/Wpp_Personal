@@ -100,7 +100,7 @@ export default async function ChatPage({ params }: PageProps<"/chats/[jid]">) {
         <div className="flex flex-col gap-1">
           {total > LIMIT && (
             <p className="mx-auto mb-2 rounded-lg bg-surface/80 px-3 py-1 text-xs text-muted">
-              Mostrando los últimos {LIMIT} de {total.toLocaleString("es-MX")} mensajes
+              Mostrando los últimos {LIMIT} de {total.toLocaleString("es-BO")} mensajes
             </p>
           )}
           {messages.length === 0 && pending.length === 0 && (

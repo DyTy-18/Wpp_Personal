@@ -47,8 +47,8 @@ El `Dockerfile` corre el panel y el worker en **un solo contenedor** (comparten 
 3. **Environment**:
    ```
    SESSION_SECRET=<genera uno: node -e "console.log(require(crypto).randomBytes(32).toString(base64url))">
-   APP_TIMEZONE=America/Mexico_City
-   TZ=America/Mexico_City
+   APP_TIMEZONE=America/La_Paz
+   TZ=America/La_Paz
    ```
 4. **Advanced → Volumes**: volumen (Volume Mount) con *Mount Path* `/app/data`. **Imprescindible**: ahí viven la base de datos y la sesión de WhatsApp; sin volumen se pierde todo en cada deploy.
 5. **Domains**: tu dominio, puerto **3000**, HTTPS activado (la cookie de sesión exige HTTPS en producción).

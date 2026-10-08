@@ -2,7 +2,7 @@ import { TIMEZONE } from "./schedule";
 
 export function formatDate(d: Date | null | undefined) {
   if (!d) return "—";
-  return new Intl.DateTimeFormat("es-MX", {
+  return new Intl.DateTimeFormat("es-BO", {
     timeZone: TIMEZONE,
     dateStyle: "medium",
     timeStyle: "short",
@@ -22,7 +22,7 @@ export function dayKey(d: Date) {
 }
 
 export function formatTime(d: Date) {
-  return new Intl.DateTimeFormat("es-MX", { timeZone: TIMEZONE, hour: "2-digit", minute: "2-digit" }).format(d);
+  return new Intl.DateTimeFormat("es-BO", { timeZone: TIMEZONE, hour: "2-digit", minute: "2-digit" }).format(d);
 }
 
 function daysAgo(d: Date) {
@@ -36,8 +36,8 @@ export function formatListTime(d: Date | null | undefined) {
   const diff = daysAgo(d);
   if (diff <= 0) return formatTime(d);
   if (diff === 1) return "Ayer";
-  if (diff < 7) return new Intl.DateTimeFormat("es-MX", { timeZone: TIMEZONE, weekday: "long" }).format(d);
-  return new Intl.DateTimeFormat("es-MX", { timeZone: TIMEZONE, dateStyle: "short" }).format(d);
+  if (diff < 7) return new Intl.DateTimeFormat("es-BO", { timeZone: TIMEZONE, weekday: "long" }).format(d);
+  return new Intl.DateTimeFormat("es-BO", { timeZone: TIMEZONE, dateStyle: "short" }).format(d);
 }
 
 /** Separador de día dentro de una conversación */
@@ -45,7 +45,7 @@ export function formatDayLabel(d: Date) {
   const diff = daysAgo(d);
   if (diff <= 0) return "Hoy";
   if (diff === 1) return "Ayer";
-  return new Intl.DateTimeFormat("es-MX", {
+  return new Intl.DateTimeFormat("es-BO", {
     timeZone: TIMEZONE,
     weekday: diff < 7 ? "long" : undefined,
     day: "numeric",

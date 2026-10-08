@@ -17,7 +17,7 @@ export default async function ChatsIndexPage() {
         Elige un chat para ver la conversación, escribir o programar un mensaje.
       </p>
       <p className="text-xs text-muted">
-        {chats.toLocaleString("es-MX")} chats · {messages.toLocaleString("es-MX")} mensajes guardados
+        {chats.toLocaleString("es-BO")} chats · {messages.toLocaleString("es-BO")} mensajes guardados
       </p>
     </div>
   );
