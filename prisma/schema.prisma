@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+/// type: "once" (una vez) | "interval" (cada X minutos) | "cron" (días y hora)
+model ScheduledMessage {
+  id              String       @id @default(cuid())
+  to              String // JID: 5215512345678@s.whatsapp.net o 1203...@g.us
+  toLabel         String // nombre legible del destino
+  text            String
+  type            String
+  sendAt          DateTime?
+  intervalMinutes Int?
+  cron            String?
+  nextRunAt       DateTime?
+  active          Boolean      @default(true)
+  sentCount       Int          @default(0)
+  lastSentAt      DateTime?
+  lastError       String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  logs            MessageLog[]
+
+  @@index([active, nextRunAt])
+}
+
+model MessageLog {
+  id        String            @id @default(cuid())
+  messageId String?
+  message   ScheduledMessage? @relation(fields: [messageId], references: [id], onDelete: SetNull)
+  to        String
+  toLabel   String
+  text      String
+  status    String // "sent" | "failed" | "skipped"
+  error     String?
+  createdAt DateTime          @default(now())
+
+  @@index([createdAt])
+}
+
+/// Estado de la conexión de WhatsApp, lo escribe el worker y lo lee el panel
+model WaState {
+  id        String   @id @default("main")
+  status    String   @default("disconnected") // disconnected | connecting | qr | connected
+  qr        String?
+  me        String?
+  command   String? // "logout" -> el panel le pide al worker cerrar sesión
+  syncProgress Int? // % de la sincronización de historial (null = sin sincronizar ahora)
+  updatedAt DateTime @updatedAt
+}
+
+/// Grupos sincronizados desde WhatsApp para poder elegirlos en el formulario
+model WaGroup {
+  jid       String   @id
+  name      String
+  updatedAt DateTime @updatedAt
+}
+
+/// Chats (individuales y grupos) recuperados del historial de WhatsApp
+model WaChat {
+  jid             String    @id // @s.whatsapp.net, @lid o @g.us
+  name            String?
+  phone           String? // solo dígitos, si se conoce
+  isGroup         Boolean   @default(false)
+  archived        Boolean   @default(false)
+  unreadCount     Int       @default(0)
+  lastMessageAt   DateTime?
+  lastMessageText String?
+  updatedAt       DateTime  @updatedAt
+
+  @@index([lastMessageAt])
+}
+
+model WaContact {
+  jid       String   @id
+  lid       String?
+  phone     String?
+  name      String? // como lo tienes guardado
+  notify    String? // el nombre que el contacto se puso
+  updatedAt DateTime @updatedAt
+
+  @@index([lid])
+}
+
+model WaMessage {
+  id         String   @id // chatJid + ":" + id del mensaje
+  chatJid    String
+  fromMe     Boolean
+  senderJid  String? // quién escribió (en grupos): @lid o @s.whatsapp.net
+  senderName String?
+  kind       String // text | image | video | audio | document | sticker | location | contact | poll | other
+  text       String?
+  timestamp  DateTime
+
+  @@index([chatJid, timestamp])
+}

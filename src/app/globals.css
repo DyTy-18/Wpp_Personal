@@ -1,26 +1,94 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --bg: #f6f7f5;
+  --surface: #ffffff;
+  --surface-2: #f0f2ef;
+  --border: #e3e6e1;
+  --text: #121a14;
+  --muted: #5f6b62;
+  --accent: #128c4a;
+  --accent-soft: #e3f4ea;
+  --accent-text: #ffffff;
+  --danger: #c2372f;
+  --danger-soft: #fbe9e7;
+  --warn: #a86400;
+  --warn-soft: #fdf1dc;
+  --chat-bg: #efeae2;
+  --bubble-in: #ffffff;
+  --bubble-out: #d9fdd3;
+  --selected: #f0f2f5;
+  --sender-l: 36%; /* luminosidad de los nombres de participantes en grupos */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg: #0d1210;
+    --surface: #141b17;
+    --surface-2: #1b241f;
+    --border: #26312b;
+    --text: #e7ede9;
+    --muted: #8d9a91;
+    --accent: #25c76a;
+    --accent-soft: #143322;
+    --accent-text: #06130b;
+    --danger: #ef6b62;
+    --danger-soft: #3a1714;
+    --warn: #f0b04a;
+    --warn-soft: #36270d;
+    --chat-bg: #0b141a;
+    --bubble-in: #202c33;
+    --bubble-out: #005c4b;
+    --selected: #2a3942;
+    --sender-l: 70%;
   }
 }
 
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-text: var(--accent-text);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-chat-bg: var(--chat-bg);
+  --color-bubble-in: var(--bubble-in);
+  --color-bubble-out: var(--bubble-out);
+  --color-selected: var(--selected);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+@utility input {
+  @apply w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text outline-none transition placeholder:text-muted/70 focus:border-accent focus:ring-2 focus:ring-accent/20;
+}
+@utility label {
+  @apply mb-1.5 block text-sm font-medium text-text;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50;
+}
+@utility btn-primary {
+  @apply btn bg-accent text-accent-text hover:brightness-110;
+}
+@utility btn-ghost {
+  @apply btn border border-border bg-surface text-text hover:bg-surface-2;
+}
+@utility btn-danger {
+  @apply btn border border-border bg-surface text-danger hover:bg-danger-soft;
+}
+@utility card {
+  @apply rounded-xl border border-border bg-surface;
 }

@@ -1,9 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
+  // Baileys/Prisma solo corren en el worker y el servidor, no en el bundle del cliente
+  serverExternalPackages: ["@prisma/client", "bcryptjs"],
   turbopack: {
     rules: {
       "*.css": {

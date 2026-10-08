@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# sesión de WhatsApp y base de datos local
+/wa-auth
+/prisma/*.db
+/prisma/*.db-journal
+!.env.example
+/wa-auth.lock
