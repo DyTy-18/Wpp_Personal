@@ -14,13 +14,15 @@ import makeWASocket, {
 import { computeNextRun } from "../src/lib/schedule";
 import { createHistoryStore } from "./history.mjs";
 
-const AUTH_DIR = path.resolve(process.cwd(), "wa-auth");
+// En Docker DATA_DIR=/app/data (volumen persistente); en local, la carpeta del proyecto
+const DATA_DIR = path.resolve(process.env.DATA_DIR || process.cwd());
+const AUTH_DIR = path.join(DATA_DIR, "wa-auth");
 const TICK_MS = 5_000;
 // Un mensaje "una vez" que se perdió por más de esto (worker apagado) no se envía
 const MAX_LATE_MS = 24 * 60 * 60 * 1000;
 
 // Solo un worker a la vez: el más reciente escribe su id aquí y los demás se apagan solos
-const LOCK_FILE = path.resolve(process.cwd(), "wa-auth.lock");
+const LOCK_FILE = path.join(DATA_DIR, "wa-auth.lock");
 const INSTANCE_ID = randomUUID();
 // Códigos con los que la sesión ya no sirve y hay que escanear el QR de nuevo
 const SESSION_GONE = new Set<number>([

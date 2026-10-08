@@ -25,5 +25,6 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\.(?:png|svg|ico)$).*)"],
+  // api/health queda fuera: lo usa el healthcheck de Docker sin sesión
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/health|.*\\.(?:png|svg|ico)$).*)"],
 };
